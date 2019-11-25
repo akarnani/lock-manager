@@ -13,23 +13,6 @@ input_boolean:
   garageacess_notifications:
     name: "Garage Notifications"
 
-############## binary_sensor:  ####################  
-binary_sensor:
-- platform: template
-  sensors:
-  
-    vision_security_zd2105us_5_recessed_door_window_sensor_access_control_frontdoor:
-      value_template: "{{ is_state('sensor.vision_security_zd2105us_5_recessed_door_window_sensor_access_control_frontdoor', '22') }}"
-      friendly_name: "Front Door"
-      device_class: door
-
-    vision_security_zd2105us_5_recessed_door_window_sensor_burglar_frontdoor:
-      value_template: "{{ is_state('sensor.vision_security_zd2105us_5_recessed_door_window_sensor_burglar_frontdoor', '3') }}"
-      
-      
-      friendly_name: "Front Door Sensor Tamper"
-      device_class: safety
-
 ###################  sensor:  ####################  
 sensor:
 
@@ -39,18 +22,8 @@ sensor:
     frontdoor_statusreport:
       friendly_name: 'Front Status Report'
       value_template: >
-          {% set number = states('sensor.schlage_allegion_be469_touchscreen_deadbolt_alarm_level_frontdoor') %}
-          {% set alarm_type_value = states('sensor.schlage_allegion_be469_touchscreen_deadbolt_alarm_type_frontdoor') %}
-
-          {% if ((as_timestamp(now())-as_timestamp(states.lock.schlage_allegion_be469_touchscreen_deadbolt_locked_frontdoor.last_changed)) < 15 and (as_timestamp(now())-as_timestamp(states.sensor.schlage_allegion_be469_touchscreen_deadbolt_alarm_type_frontdoor.last_changed)) > 15) %}
-
-          {%    if (states.lock.schlage_allegion_be469_touchscreen_deadbolt_locked_frontdoor.state) == 'locked' %}
-          {%       set alarm_type_value = '24' %}
-          {%    elif (states.lock.schlage_allegion_be469_touchscreen_deadbolt_locked_frontdoor.state) == 'unlocked' %}
-          {%       set alarm_type_value = '25' %}
-          {%    endif %}
-
-          {% endif %}
+          {% set number = states(' sensor.front_door_lock_alarm_level') %}
+          {% set alarm_type_value = states('sensor.front_door_lock_alarm_type') %}
           
           {% set alarm_type_general_actions = {
             '0':'No Status Reported',          
@@ -83,7 +56,7 @@ sensor:
           {% elif alarm_type_value in alarm_type_general_actions %}
             {{alarm_type_value}};{{ alarm_type_general_actions[alarm_type_value] }}
           {% else %}
-            {{-1}};Unknown Alarm Type Value {{ states('sensor.schlage_allegion_be469_touchscreen_deadbolt_alarm_type_frontdoor') }}
+            {{-1}};Unknown Alarm Type Value {{ states('sensor.front_door_lock_alarm_type') }}
           {% endif %}
 
 ###################  automation:  ####################  
@@ -160,43 +133,7 @@ automation:
               {{ user }}
 
 ###############################
-    - alias: Front Door Sensor Close
-      condition:
-        - condition: state
-          entity_id: 'binary_sensor.allow_automation'
-          state: 'on' 
-      trigger:
-        entity_id: binary_sensor.vision_security_zd2105us_5_recessed_door_window_sensor_access_control_frontdoor
-        platform: state
-        to: 'off'
-      action:
-        - service: script.conditional_notify
-          data_template:
-            boolean: input_boolean.dooraccess_notifications
-            title: "Front Door"    
-            message: "Closed"
-
-    - alias: Front Door Sensor Opened
-      condition:
-        - condition: state
-          entity_id: 'binary_sensor.allow_automation'
-          state: 'on' 
-      trigger:
-        entity_id: binary_sensor.vision_security_zd2105us_5_recessed_door_window_sensor_access_control_frontdoor
-        platform: state
-        to: 'on'
-      action:
-        - service: script.conditional_notify
-          data_template:
-            boolean: input_boolean.dooraccess_notifications
-            title: "Front Door"    
-            message: "Opened"
-    
     - alias: Add Code
-      condition:
-        - condition: state
-          entity_id: 'binary_sensor.allow_automation'
-          state: 'on' 
       trigger:
         entity_id: binary_sensor.frontdoor_active_1, binary_sensor.frontdoor_active_2, binary_sensor.frontdoor_active_3, binary_sensor.frontdoor_active_4, binary_sensor.frontdoor_active_5, binary_sensor.frontdoor_active_6 
         platform: state
@@ -205,7 +142,7 @@ automation:
         - service: lock.set_usercode
           data_template:
             node_id: >- 
-                {{states.lock.schlage_allegion_be469_touchscreen_deadbolt_locked_frontdoor.attributes.node_id}}
+                {{states.zwave.front_door_lock.attributes.node_id}}
             code_slot: >-
                 {% set object_id = trigger.to_state.object_id %}
                 {% set index = 17 %}
@@ -224,9 +161,6 @@ automation:
         entity_id: input_text.frontdoor_pin_1, input_text.frontdoor_pin_2, input_text.frontdoor_pin_3, input_text.frontdoor_pin_4, input_text.frontdoor_pin_5, input_text.frontdoor_pin_6
         platform: state
       condition:
-        - condition: state
-          entity_id: 'binary_sensor.allow_automation'
-          state: 'on' 
         - condition: template
           value_template: >-
             {% set object_id = trigger.to_state.object_id %}
@@ -252,10 +186,6 @@ automation:
               {{ 'input_boolean.frontdoor_enabled_' + code_slot | string }}
     
     - alias: Clear Code
-      condition:
-        - condition: state
-          entity_id: 'binary_sensor.allow_automation'
-          state: 'on' 
       trigger:
         entity_id: binary_sensor.frontdoor_active_1, binary_sensor.frontdoor_active_2, binary_sensor.frontdoor_active_3, binary_sensor.frontdoor_active_4,binary_sensor.frontdoor_active_5, binary_sensor.frontdoor_active_6 
         platform: state
