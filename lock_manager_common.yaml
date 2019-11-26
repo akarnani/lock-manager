@@ -8,10 +8,6 @@
 input_boolean:
   lock_notifications:
     name: "Lock Notifications"
-  dooraccess_notifications:
-    name: "Door Notifications"
-  garageacess_notifications:
-    name: "Garage Notifications"
 
 ###################  sensor:  ####################  
 sensor:
@@ -22,7 +18,7 @@ sensor:
     frontdoor_statusreport:
       friendly_name: 'Front Status Report'
       value_template: >
-          {% set number = states(' sensor.front_door_lock_alarm_level') %}
+          {% set number = states('sensor.front_door_lock_alarm_level') %}
           {% set alarm_type_value = states('sensor.front_door_lock_alarm_type') %}
           
           {% set alarm_type_general_actions = {
@@ -61,38 +57,6 @@ sensor:
 
 ###################  automation:  ####################  
 automation:
-
-    - alias: Lock Notifications
-      trigger:
-        platform: state
-        entity_id: sensor.frontdoor_statusreport
-      condition:
-        - condition: state
-          entity_id: 'binary_sensor.allow_automation'
-          state: 'on' 
-        - condition: template
-          value_template: >-
-            {% set report = states.sensor.frontdoor_statusreport.state %}
-            {% set a = report.split(';') %}
-            {% if (a|length) != 3 or (a[2] == "0") %} 
-              {{ true }}
-            {% else %}
-              {{ false }}
-            {% endif %}
-      action:
-        - service: script.conditional_notify
-          data_template:
-            boolean: input_boolean.lock_notifications
-            title: "Sensor Status Report"
-            message: >-
-              {% set report = states.sensor.frontdoor_statusreport.state %}
-              {% set a = report.split(';') %}
-              {% set msg = "ID:" + a[0] + " MSG:" + a[1] %}
-              {% if (a|length) == 3 %}
-              {%   set msg = msg + " SLOT:" + a[2] %}
-              {% endif %}
-              {{ a[1] }}
-    
     - alias: User Lock Notifications
       trigger:
         platform: state

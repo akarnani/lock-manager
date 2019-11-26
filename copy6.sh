@@ -9,14 +9,10 @@ do
    if [ $value -gt 1 ]
    then
       cp lock_manager_1.yaml lock_manager_$value.yaml
-      sed -i 's/_1/_'$value'/g' lock_manager_$value.yaml
+      sed 's/_1/_'$value'/g' lock_manager_1.yaml > lock_manager_$value.yaml
    fi
 
-
-   cp lovelace.code lovelace.$value
-   sed -i 's/X/'$value'/g' lovelace.$value
-   cat lovelace.$value  >> lovelace.tmp
-   rm lovelace.$value
+   sed 's/X/'$value'/g' lovelace.code >> lovelace.tmp
 done
 mv lovelace.tmp lovelace
 

@@ -4,8 +4,6 @@
     panel: false
     badges:
       - input_boolean.lock_notifications
-      - input_boolean.dooraccess_notifications
-      - input_boolean.garageacess_notifications
     cards:
       - type: vertical-stack
         cards:
@@ -24,8 +22,10 @@
               - type: 'custom:fold-entity-row'
                 head:
                   type: section
-                  label: Access Options
+                  label: Advanced Options
                 entities:
+                  - entity: input_boolean.reset_advanced_1
+                  - type: divider
                   - entity: input_boolean.frontdoor_accesslimit_1
                   - entity: input_number.frontdoor_accesscount_1
                   - type: divider
@@ -77,8 +77,10 @@
               - type: 'custom:fold-entity-row'
                 head:
                   type: section
-                  label: Access Options
+                  label: Advanced Options
                 entities:
+                  - entity: input_boolean.reset_advanced_2
+                  - type: divider
                   - entity: input_boolean.frontdoor_accesslimit_2
                   - entity: input_number.frontdoor_accesscount_2
                   - type: divider
@@ -130,8 +132,10 @@
               - type: 'custom:fold-entity-row'
                 head:
                   type: section
-                  label: Access Options
+                  label: Advanced Options
                 entities:
+                  - entity: input_boolean.reset_advanced_3
+                  - type: divider
                   - entity: input_boolean.frontdoor_accesslimit_3
                   - entity: input_number.frontdoor_accesscount_3
                   - type: divider
@@ -183,8 +187,10 @@
               - type: 'custom:fold-entity-row'
                 head:
                   type: section
-                  label: Access Options
+                  label: Advanced Options
                 entities:
+                  - entity: input_boolean.reset_advanced_4
+                  - type: divider
                   - entity: input_boolean.frontdoor_accesslimit_4
                   - entity: input_number.frontdoor_accesscount_4
                   - type: divider
@@ -236,8 +242,10 @@
               - type: 'custom:fold-entity-row'
                 head:
                   type: section
-                  label: Access Options
+                  label: Advanced Options
                 entities:
+                  - entity: input_boolean.reset_advanced_5
+                  - type: divider
                   - entity: input_boolean.frontdoor_accesslimit_5
                   - entity: input_number.frontdoor_accesscount_5
                   - type: divider
@@ -289,8 +297,10 @@
               - type: 'custom:fold-entity-row'
                 head:
                   type: section
-                  label: Access Options
+                  label: Advanced Options
                 entities:
+                  - entity: input_boolean.reset_advanced_6
+                  - type: divider
                   - entity: input_boolean.frontdoor_accesslimit_6
                   - entity: input_number.frontdoor_accesscount_6
                   - type: divider
